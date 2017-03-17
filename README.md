@@ -58,7 +58,6 @@ Rscript /home/eagle/JUM/R_script_JUM.R experiment_design.txt > outputFile.Rout 2
        control biological replicates. JUM_2.sh then outputs the following files IndexA_2nd_combined_count.txt, 
        IndexB_2nd_combined_count.txt, IndexC_2nd_combined_count.txt, and IndexD_2nd_combined_count.txt. Note, it is 
        important to keep the samples names and condition names in the same alphabetic order in the experiment design file.
-    
        R_script_JUM.R will output a file called AS_differential.txt
 10. Run JUM_3.sh:
 bash /home/eagle/JUM/JUM_3.sh #directory #pvalue|adjusted_pvalue #threshold #number_of_samples #number_of_control_samples|treated_samples>
