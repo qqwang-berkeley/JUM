@@ -7,6 +7,9 @@ Requirements:
 
 Installation: Download the JUM package to a local folder of choice (for example, /home/eagle/) and unpack.
 
+Note: 1) JUM uses RNA-seq reads mapped to splice junctions to construct statistical models and quantify AS changes, therefore the depth of RNA-seq datasets can affect how many alternative splicing events will be found. We have successfully tested Drosophila samples of ~20M reads and human samples of ~40M reads.
+2) JUM uses biological replicates to build statistical models. Ideally for each condition the user will have >= 2 replicates. There is a workaround if the user only has one replicate for each biological condition. Plese contact the author if this is the case. 
+
 Manual: 
 1. Perform the first round STAR mapping of RNA-seq reads as instructed in the STAR manual.
 
@@ -64,7 +67,8 @@ This step will create a file called: combined_SJ_out_tab_unannotated_for_2nd_pas
        For example, suppose the user has a total of 4 samples (two controls and two treated), and wish to use pvalue 0.05 as cut off, then run JUM_3.sh as follows:
         bash /home/eagle/JUM/JUM_3.sh /home/eagle/JUM pvalue 0.05 4 2
 
- JUM_3.sh output a folder: FINAL_JUM_OUTPUT with the following files:
+
+JUM_3.sh output a folder: FINAL_JUM_OUTPUT with the following files:
 AS_differential_JUM_output_A3SS_events_pvalue_0.05.txt
 AS_differential_JUM_output_A5SS_events_pvalue_0.05.txt
 AS_differential_JUM_output_cassette_exon_events_pvalue_0.05.txt
@@ -79,3 +83,5 @@ total_mixed_event.txt
 Valid_total_MXE_listt.txt
 cassette_exon_coordinate.bed
 MXE_coordinate.bed
+
+AS_differential_JUM_output_* series of files record AS events that are signi
