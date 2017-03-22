@@ -1,5 +1,5 @@
 # JUM
-This is a beta-test verison of JUM. 
+This is a beta verison of JUM. 
 
 Further improvement in user-interface will be uploaded sequentially.   
 
