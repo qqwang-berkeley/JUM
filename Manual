@@ -1,6 +1,6 @@
 Requirements: 
      ● Perl (5+)
-     ● Samtools
+     ● Samtools (1.3.1+)
      ● Bedtools (2.26.0+)
      ● R
      ● STAR
