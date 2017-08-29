@@ -4,7 +4,7 @@ Requirements:
      ● Bedtools (2.26.0+)
      ● R
      ● STAR
-
+     
 Installation: Download the JUM package to a local folder of choice (for example, /home/eagle/) and unpack.
 
 Note: 1) JUM uses RNA-seq reads mapped to splice junctions to construct statistical models and quantify AS changes, 
@@ -12,6 +12,26 @@ therefore the depth of RNA-seq datasets can affect how many alternative splicing
 successfully tested Drosophila samples of as low as ~20M reads and human samples of as low as ~35M reads.
 2) JUM uses biological replicates to build statistical models. Ideally for each condition the user will have >= 2 replicates. 
 There is a workaround if the user only has one replicate for each biological condition. Plese contact the author if this is the case. 
+3) Perl module Array::Utils is required. To install perl module using CPAN on a server without root access, do the following:
+wget -O- http://cpanmin.us | perl - -l ~/perl5 App::cpanminus local::lib
+eval `perl -I ~/perl5/lib/perl5 -Mlocal::lib`
+echo 'eval `perl -I ~/perl5/lib/perl5 -Mlocal::lib`' >> ~/.profile
+echo 'export MANPATH=$HOME/perl5/man:$MANPATH' >> ~/.profile
+(This assumes your system profile is named .profile, you may need to change that to be .bash_profile, .bashrc, etc.)
+
+Now, to configure cpan:
+>>cpan
+Would you like to configure as much as possible automatically? [yes] yes
+
+What approach do you want?  (Choose 'local::lib', 'sudo' or 'manual')
+[local::lib] local::lib
+Would you like me to append that to /home/eagle/.bashrc now? [yes] yes
+>>exit
+
+Now to install whatever perl module you want:
+cpanm Module::Name
+In this case, it should be:
+cpanm Array::Utils 
 
 Manual: 
 1. Perform the first round STAR mapping of RNA-seq reads as instructed in the STAR manual.
