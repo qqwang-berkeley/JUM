@@ -1,1 +1,253 @@
+Requirements: 
+     ● Perl (5+)
+     ● Samtools (1.3.1+)
+     ● Bedtools (2.26.0+)
+     ● R
+     ● STAR
+     
+Installation: Download the JUM package to a local folder of choice (for example, /home/eagle/) and unpack.
+
+Notes: 1) JUM uses RNA-seq reads mapped to splice junctions to construct statistical models and quantify AS changes, 
+therefore the depth of RNA-seq datasets can affect how many alternative splicing events will be found. We have 
+successfully tested Drosophila samples of as low as ~20M reads and human samples of as low as ~35M reads.
+2) JUM uses biological replicates to build statistical models. Ideally for each condition the user will have >= 2 replicates. 
+There is a workaround if the user only has one replicate for each biological condition. Plese contact the author if this is the case. 
+3) Perl module Array::Utils is required. To install perl module using CPAN on a server without root access, do the following:
+   wget -O- http://cpanmin.us | perl - -l ~/perl5 App::cpanminus local::lib
+   eval `perl -I ~/perl5/lib/perl5 -Mlocal::lib`
+   echo 'eval `perl -I ~/perl5/lib/perl5 -Mlocal::lib`' >> ~/.profile
+   echo 'export MANPATH=$HOME/perl5/man:$MANPATH' >> ~/.profile
+   (This assumes your system profile is named .profile, you may need to change that to be .bash_profile, .bashrc, etc.)
+   
+   Now, to configure cpan:
+   >>cpan
+   Would you like to configure as much as possible automatically? [yes] yes
+
+   What approach do you want?  (Choose 'local::lib', 'sudo' or 'manual')
+   [local::lib] local::lib
+   Would you like me to append that to /home/eagle/.bashrc now? [yes] yes
+   >>exit
+
+   Now to install whatever perl module you want:
+   cpanm Module::Name
+   In this case, it should be:
+   cpanm Array::Utils 
+
+Manual: 
+1. Perform the first round STAR mapping of RNA-seq reads as instructed in the STAR manual.  Below are suggested commands (suppose 100bp paired end reads):
+   a) Making genome index:
+      mkdir genome_index_STAR_r1
+      STAR --runThreadN 3 --runMode genomeGenerate --genomeDir genome_index_STAR_r1 --genomeFastaFiles hg38.fa --sjdbGTFfile hg38_genes.gtf --sjdbOverhang 100
+   b) First round of mapping:
+      STAR --runThreadN 3 --genomeDir genome_index_STAR_r1 --outFileNamePrefix ctrl_1st --readFilesIn ctrl_R01.fastq ctrl_R02.fastq --outSJfilterReads Unique
+      
+2. Create a working folder, (for example, /home/eagle/JUMwork) and copy STAR output with suffix “Aligned.out.sam” and 
+“SJ.out.tab” from all samples to the folder. For example, suppose the user has IndexA (control), IndexB (control), IndexC (treatment) 
+and IndexD (treatment), then the user should copy the following STAR output files to /home/eagle/JUMwork.
+
+   IndexAAligned.out.sam
+   IndexASJ.out.tab
+
+   IndexBAligned.out.sam
+   IndexBSJ.out.tab
+
+   IndexCAligned.out.sam
+   IndexCSJ.out.tab
+
+   IndexDAligned.out.sam
+   IndexDSJ.out.tab
+
+3. Run JUM_1.sh in the JUM package:
+   bash /home/eagle/JUM_1.3.5/JUM_1.sh
+   
+   This step will create a file called: combined_SJ_out_tab_unannotated_for_2nd_pass_genome_generation.txt
+
+4. Delete all Aligned.out.sam and SJ.out.tab files from this folder (to avoid confusion with second round STAR mapping results).
+
+5. Perform second round of STAR mapping of RNA-seq reads. Below are suggested commands: 
+   a) Making genome index:
+      mkdir genome_index_STAR_r2
+      STAR --runThreadN 3 --runMode genomeGenerate --genomeDir genome_index_STAR_r2 --genomeFastaFiles hg38.fa --sjdbFileChrStartEnd combined_SJ_out_tab_unannotated_for_2nd_pass_genome_generation.txt --sjdbGTFfile hg38_genes.gtf --sjdbOverhang 100
+   b) Second round of mapping:
+      STAR --runThreadN 3 --genomeDir genome_index_STAR_r2 --outFileNamePrefix ctrl_2nd --readFilesIn ctrl_R01.fastq ctrl_R02.fastq --outSJfilterReads Unique --outSAMstrandField intronMotif --outFilterMultimapNmax 1
+
+6. Copy the resulted second round STAR output with suffix “Aligned.out.sam” and “SJ.out.tab” to the working folder (i.e. /home/eagle/JUMwork).
+
+7. Use samtools and bedtools to transform all Aligned.out.sam files (use the exact naming system as below):
+   samtools view -bS IndexAAligned.out.sam > IndexAAligned.out.bam
+   samtools sort IndexAAligned.out.bam > IndexAAligned.out_sorted.bam
+   bedtools genomecov -ibam IndexAAligned.out_sorted.bam -bga -split > IndexAAligned.out_coverage.bed
+   do this for all your samples.
+    
+8. Run JUM_2-1.sh
+   bash /home/eagle/JUM_1.3.5/JUM_2-1.sh 
+
+9. Create subdirectories for each condition.  For example, control and treatment:
+   mkdir control
+   mkdir treatment
+
+10. Copy files with suffix “SJ.out.tab_strand_symbol_scaled” from the current directory to the corresponding condition subdirectories, respectively:
+   cp IndexA_SJ.out.tab_strand_symbol_scaled control/
+   cp IndexB_SJ.out.tab_strand_symbol_scaled control/
+   cp IndexC_SJ.out.tab_strand_symbol_scaled treatment/
+   cp IndexD_SJ.out.tab_strand_symbol_scaled treatment/
+
+11. Copy the file "UNION_junc_coor_with_junction_ID.txt" to each of the condition subdirectories:
+   cp UNION_junc_coor_with_junction_ID.txt control/
+   cp UNION_junc_coor_with_junction_ID.txt treatment/
+   
+12. In each of the subdirectories, run JUM-2-2.sh like:
+    bash JUM_2.sh #directory #read_threshold #condition_name
+    (the command needs three input parameters:
+         parameter a. #directory: path of the downloaded JUM package.
+         parameter b. #read_number_threshold_for_junction: JUM will only consider junctions that have more than this # of unique reads mapped to it 
+                     in all the replicates under at least one of the conditions as valid junctions;
+         parameter c. #condition_name: the name of the condition, for example, control)
+    
+    Example:
+    cd control
+    bash /home/eagle/JUM_1.3.5/JUM_2-2.sh ~/JUM_1.3.5 5 WT
+    cd ..
+    cd treatment
+    bash /home/eagle/JUM_1.3.5/JUM_2-2.sh ~/JUM_1.3.5 5 treatment
+    cd ..
+
+13. Copy the files with suffix "junction_counts.txt" and "formatted.txt" from each of the condition subdirectories to the current directory:
+    cp control/*junction_counts.txt .
+    cp treatment/*junction_counts.txt .
+    cp control/*formatted.txt .
+    cp treatment/*formatted.txt .
+    
+14. Run JUM_2-3.sh under the current major directory (i.e. /home/eagle/JUMwork) (this step may take up to several hours depending on number of samples to run):
+   bash /home/eagle/JUM_1.3.5/JUM_2-3.sh #directory #read_threshold_1 #read_threshold_2 #read_length
+   (the command needs four input parameters: 
+        parameter a. #directory: path of the downloaded JUM package.
+        parameter b. #read_number_threshold_for_junction: JUM will only consider junctions that have more than this # of unique reads mapped to it 
+                     in all the replicates under at least one of the conditions as valid junctions;
+        parameter c. #read_number_threshod_for_exon_intron_boundary: JUM will only consider retained introns that have more than this # of unique 
+                     reads mapped to the upstream exon-intron and downstream intron-exon boundaries as valid potential retained introns;
+        parameter d. #read_length: the length of the RNA-seq reads)
+    
+    Example: 
+    bash /home/eagle/JUM_1.3.5/JUM_2-3.sh /home/eagle/JUM_1.3.5 5 2 100
+    JUM_2-3.sh outputs results into a new folder called JUM_diff/
+    
+15. Run the R script in the JUM package, with a user-provided experiment design file (txt format) for differential AS analysis. 
+   Rscript /home/eagle/JUM_1.3.5/R_script_JUM.R experiment_design.txt > outputFile.Rout 2> errorFile.Rout
+      An example experiment_design.txt file is included in the package for the example below: suppose the user has IndexA, IndexB, IndexC and IndexD samples. 
+      IndexA and IndexB are drug treated biological replicates and IndexC and IndexD are control biological replicates. JUM_2.sh then outputs the following files 
+      IndexA_2nd_combined_count.txt, IndexB_2nd_combined_count.txt, IndexC_2nd_combined_count.txt, and IndexD_2nd_combined_count.txt. Note, it is important to keep 
+      the samples names and condition names in the same alphabetic order in the experiment design file.
+      R_script_JUM.R will output a file called "AS_differential.txt"
+
+16. Run JUM_3.sh:
+        bash /home/eagle/JUM_1.3.5/JUM_3.sh #directory #pvalue|adjusted_pvalue #threshold #number_of_samples #<number of control_samples|treated_samples>
+         (the command needs five input parameters: 
+         parameter a. #directory: path of the downloaded JUM package
+         parameter b. #pvalue|adjusted_pvalue: statistical standard to use as cut-off. Choose between pvalue or padj (multi-test adjusted pvalue).
+         parameter c. #threshold: cutoff value for pvalue or padj (I.e. 0.05, 0.01, …)
+         parameter d. #number_of_samples: total number of RNA-seq samples
+         Parameter e. #the number of control samples or the number of treated samples, whichever is smaller)
+       
+       For example, suppose the user has a total of 4 samples (two controls and two treated), and wish to use pvalue 0.05 as cut off, then run JUM_3.sh as follows:
+        bash /home/eagle/JUM_1.3.5/JUM_3.sh /home/eagle/JUM_1.3.5 pvalue 0.05 4 2
+
+       JUM_3.sh output a folder: FINAL_JUM_OUTPUT with the following files:
+       AS_differential_JUM_output_A3SS_events_pvalue_0.05.txt
+       AS_differential_JUM_output_A5SS_events_pvalue_0.05.txt
+       AS_differential_JUM_output_cassette_exon_events_pvalue_0.05.txt
+       AS_differential_JUM_output_intron_retention_pvalue_0.05.txt
+       AS_differential_JUM_output_mixed_events_pvalue_0.05.txt
+       AS_differential_JUM_output_MXE_events_pvalue_0.05.txt
+       Valid_total_A3SS_event.txt
+       Valid_total_A5SS_event.txt
+       Valid_total_cassette_exon_event.txt
+       total_intron_retention_event.txt
+       total_mixed_event.txt
+       Valid_total_MXE_list.txt
+       cassette_exon_coordinate.bed
+       MXE_coordinate.bed
+    AS_differential_JUM_output_* files record AS events that are significantly changed upon a treatment (or different tissue type etc.) in each AS event pattern category.
+    Valid_total_* event.txt and total_*_event.txt record the IDs of total AS events in each category found by JUM in this tissue/cell sample.
+    cassette_exon_coordinate/MXE_coordinate.bed record the coordinates of the alternatively spliced cassette exon and mutually exclusive exons in each of the AS event.
+
+17. Enter the folder: 
+      cd FINAL_JUM_OUTPUT
+      
+18. Run JUM_4.sh (two versions, two-replicates for control and treated samples or three-replicates each; if you have sample size different from the two scenarios above,
+    contact me. I am also working on updating the script to fit all kinds of replicate number combinations for users. Check later versions):
+      bash /home/eagle/JUM_1.3.5/JUM_4.sh #directory #pvalue|adjusted_pvalue #threshold 
+         (the command needs three input parameters: 
+         parameter a. #directory: path of the downloaded JUM package
+         parameter b. #pvalue or adjusted_pvalue: statistical standard to use as cut-off. Choose between pvalue or padj (multi-test adjusted pvalue).
+         parameter c. #threshold: cutoff value for pvalue or padj (I.e. 0.05, 0.01, …))
+     
+     For example, suppose the user has a total of two replicates for control and two replicates for treated samples, and wish to use pvalue 0.05 as cut off, then run JUM_4 as:
+       bash /home/eagle/JUM_1.3.5/JUM_4_2replicates.sh /home/eagle/JUM_1.3.3 pvalue 0.05
+       
+       JUM_4.sh will output files with the name: *_sorted_with_dpsi.txt
+       These are the final output files.  
+    
+19. Explanation of the output file format:
+    In JUM, each AS event will contain several AS_structures. For the definition of AS_structures, refer to the manuscript Figure 2 (page 28) and corresponding text part.  Each AS_structure 
+    contains several sub_AS_junctions; for more details refer to the same figure and text. 
+    
+    So basically, if you count the unique IDs of the first column (AS event) that is the number of AS events that are differentially spliced between two conditions in that category (CE, A5SS, 
+    A3SS, IR, MXE, mixed). The total number of AS events in each category that are identified from the sample are also listed in those total event txt files.
+
+    Below I am specifying what each column means, by using an example of comparing the AS between a control condition and a RNAi knockdown condition, with triplicates each (index1,2,3 are knockdown 
+    and index 4 5 6 are controls).
+
+    sub-junction_dispersion_estimate: the estimated dispersion parameter when modeling the count data as negative binomial distributions. Each sub_AS_junction receives one dispersion parameter. 
+    Refer to the manuscript for details. General users don't need to pay too much attention to this.
+
+    LRT_statistic-full_vs_reduced: The statistic calculated to perform a statistic test - check whether the corresponding sub_AS_junction is differentially spliced between conditions. This is calculated 
+    from comparing two generalized linear models. Refer to the manuscript for details. General users don't need to pay too much attention to this.
+
+    LRT_p_value-full_vs_reduced: The pvalue for the statistical test: whether the the corresponding sub_AS_junction is significantly differentially spliced between conditions.
+    BH_adjusted_p-values:  Corrected pvalue
+
+    control
+    knockdown
+    fitting_parameter_log2fold_change_knockdown_control: these three columns are all intermediate information calculated during the generalized linear model fitting. General users don't need to pay too much attention to this.
+
+    sub_junction_chr
+    sub_junction_start_coor	
+    sub_junction_end_coor	
+    sub_junction_size	
+    sub_junction_strand: these five columns specified the chromosome coordinates, strand, size, etc. information of that sub_AS_junction.
+	
+    raw_count.Index1	
+    raw_count.Index2	
+    raw_count.Index3	
+    raw_count.Index4	
+    raw_count.Index5	
+    raw_count.Index6: the raw read counts of reads that mapped to the sub_AS_junction in each of the conditions.
+ 	
+    percentage_usage.Index1	
+    percentage_usage.Index2	
+    percentage_usage.Index3	
+    percentage_usage.Index4	
+    percentage_usage.Index5	
+    percentage_usage.Index6: the percentage usage of that sub_AS_junction in the AS structure in each of the conditions. If the sub_AS_junction is significantly differentially spliced between two conditions, you can detect a significant 
+    difference in the percentage usage between the two conditions (index1,2,3 v.s. Index 4,5,6, for example).
+
+From JUM_1.3.3: an additional column is added at the end: delta Percent spliced In (deltaPSI).
+    Compared to what I described before, the sub_junctions are sorted according to their AS event ID, and one additional column is added, that is deltaPsi. This parameter describes the level of changes of that AS event between two conditions 
+    you are comparing (Percent spliced in as usually referred to in literature).
+      Each AS event (be it cassette exon, A5SS, A3SS, intron retention, mutually exclusive exons, mixed patterns) will contain several AS structures, and each AS structure will include several sub_AS_junctions. Refer to the manuscript for details.
+      For a cassette exon event, each AS event contains two AS_structures that include four sub_AS_junctions in total. So each cassette exon AS event will have four lines in the cassette exon output file. One deltaPsi value will be calculated for 
+      each cassette exon AS event (aka, every four lines). deltaPsi here is calculated as the difference in the ratio of exon_inclusion_isoform between control and knockdown condition: 
+      deltaPSi= exon_inclusion_isoform/(exon_inclusion_isoform+exon_exclusion_isoform) (under control) - exon_inclusion_isoform/(exon_inclusion_isoform+exon_exclsion_isoform) (under knockdown). 
+
+      For an intron retention event, each AS event contains either two AS_structures and four sub_AS_junctions, so, four lines in the intron_retention output file (when the intron size is longer than the RNA-seq read length), or one AS_Structure and two sub_AS_junctions, 
+      so, two lines in the output file (when the intron size is smaller than the RNA-seq read length). One deltaPSI value is calculated for each AS event (every four lines or two lines). 
+      Here deltaPsi=intron_inclusion_isoform/(intron_inclusion_isoform+intron_exclusion_isoform) (under control) - intron_inclusion_isoform/(intron_inclusion_isoform+intron_exclusion_isoform) (under knockdown).
+
+      For an A5SS or A3SS, each AS event contains one AS structure and several sub_AS_junctions, depending on how many alternative spliced 5'/3' splice sites are there. One deltaPsi value is calculated for EACH of the sub_AS_junction (so, every line). Here deltaPsi is calculated 
+      as the change in the percentage of junction usage for each sub_AS_junction in control v.s. knockdown: 
+      sub_AS_junction_i/(sub_AS_junction_1+sub_AS_junction_2+ ... + sub_AS_junction_i+...+sub_AS_junction_n) (under control) - sub_AS_junction_i/(sub_AS_junction_1+sub_AS_junction_2+ ... + sub_AS_junction_i+...+sub_AS_junction_n) (under knockdown). It is calculated this way because 
+      A5SS and A3SS events usually have more than two alternative splicing isoforms (not like cassette exon and intron retention which only has two isoforms so the ratio can be calculated). 
+
+      For an MXE and mixed AS event, each AS event contains several AS structures and sub_AS_junctions, depending on the event. the deltaPsi value is calculated like A5SS and A3SS since they also can have more than two alternative splicing isoforms.
 
