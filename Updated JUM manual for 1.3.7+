@@ -174,30 +174,44 @@ and IndexD (treatment), then the user should copy the following STAR output file
       
 18. Run JUM_4.sh 
       bash /home/eagle/JUM_1.3.6/JUM_4.sh #directory #pvalue|adjusted_pvalue #threshold #file_num_condition_1 #file_num_condition_2
-         (the command needs five input parameters: 
+         (the command needs six input parameters: 
          parameter a. #directory: path of the downloaded JUM package
          parameter b. #pvalue or adjusted_pvalue: statistical standard to use as cut-off. Choose between pvalue or padj (multi-test adjusted pvalue).
          parameter c. #threshold: cutoff value for pvalue or padj (I.e. 0.05, 0.01, …))
 	 parameter d. #file_num_condition_1: the number of samples/replicates for condition 1 that is listed first in the experiment_design.txt file.  In our example, it is the number of replicates
 	 in drug-treated condition.
-         parameter e. #file_num_condition_2: the number of samples/replicates for condition 2 that is listed first in the experiment_design.txt file.  In our example, it is the number of control replicates.
+         parameter e. #file_num_condition_2: the number of samples/replicates for condition 2 that is listed second in the experiment_design.txt file.  In our example, it is the number of control replicates.
+	 parameter f. #a refFlat.txt file, recording known gene transcripts.  Such file should be available from UCSC genome browser for each species and users can download it to the current working directory. 
+	 Note, JUM does NOT depend on any priori knowledge of annotation.  This file here is for associating the final differential AS results from JUM to genes for the convenience of users.  If an AS event is 
+	 not mapped to any known gene, then the AS event will be marked as "NONE" in the gene mapping track.
      For example, suppose the user has a total of two replicates for control and three replicates for treated samples, and wish to use pvalue 0.05 as cut off, then run JUM_4 as:
-       bash /home/eagle/JUM_1.3.5/JUM_4_2replicates.sh /home/eagle/JUM_1.3.3 pvalue 0.05 3 2
+       bash /home/eagle/JUM_1.3.5/JUM_4_2replicates.sh /home/eagle/JUM_1.3.3 pvalue 0.05 3 2 refFlat.txt
        (if we list drug-treated samples first in the experiment.txt file)
        
        JUM_4.sh will output files with the name: *_sorted_with_dpsi.txt
        These are the final output files.  
     
-19. Explanation of the output file format:
-    In JUM, each AS event will contain several AS_structures. For the definition of AS_structures, refer to the manuscript Figure 2 (page 28) and corresponding text part.  Each AS_structure 
-    contains several sub_AS_junctions; for more details refer to the same figure and text. 
-    
-    So basically, if you count the unique IDs of the first column (AS event) that is the number of AS events that are differentially spliced between two conditions in that category (CE, A5SS, 
-    A3SS, IR, MXE, mixed). The total number of AS events in each category that are identified from the sample are also listed in those total event txt files.
+19. Output file format:
 
     Below I am specifying what each column means, by using an example of comparing the AS between a control condition and a RNAi knockdown condition, with triplicates each (index1,2,3 are knockdown 
     and index 4 5 6 are controls).
-
+    
+    You need to count the unique IDs of the second column (AS event ID) for the number of AS events that are differentially spliced between two conditions in the corresponding category (cassette exon, A5SS, 
+    A3SS, intron retention, MXE, composite). The total number of AS events in each category that are identified from the biological sample under study are listed in those total event txt files. 
+    
+    The first four columns specify the ID of the AS event, the gene it is associated with, and the basic structure of the AS event in terms of JUM definition (refer to Figure 2 (page 28) and corresponding text in the JUM 
+    manuscript for details).  In JUM, each AS event will contain several AS_structures and each AS_structure contains several sub_AS_junctions.  In general, each cassette exon AS event, intron retention event with intron size larger than read length, 
+    and MXE AS event has two AS structures, and each AS structure has two sub-AS-junctions. As a result these AS event will have four lines in the final output that explain the details of the differential splicing of the event.  For intron retention
+    event with intron size smaller than the read length, each AS event will contain one AS structure that has two sub-AS-junctions.  As a result these small intron retention AS event will have two lines in the final output that explain the details of 
+    the differential splicing of the AS event. For A5SS and A3SS AS event, each AS event contains one AS structure and each AS structure has several sub-AS-junctions, depending on how many alternative 5' or 3' splice sites the AS event covers.  As a result 
+    each A5SS and A3SS AS event will have multiple lines in the final output specifying the details of the differential splicing of the event.  For a composite AS event, each AS event contains several AS structure and each AS structure has several sub-AS-junctions, 
+    depending on what the composite AS event is. As a result each composite AS event will have multiple lines in the final output specifying the details of the differential splicing of the event.
+    
+    Gene: The gene that the AS event is associated with.
+    AS_event_ID: The AS event ID.  
+    AS_structure_ID: The AS structures that the specific AS event covers.  
+    sub_junction_ID: the sub_AS_junctions that each AS structure includes from the specific AS event.
+    
     sub-junction_dispersion_estimate: the estimated dispersion parameter when modeling the count data as negative binomial distributions. Each sub_AS_junction receives one dispersion parameter. 
     Refer to the manuscript for details. General users don't need to pay too much attention to this.
 
@@ -205,6 +219,7 @@ and IndexD (treatment), then the user should copy the following STAR output file
     from comparing two generalized linear models. Refer to the manuscript for details. General users don't need to pay too much attention to this.
 
     LRT_p_value-full_vs_reduced: The pvalue for the statistical test: whether the the corresponding sub_AS_junction is significantly differentially spliced between conditions.
+    
     BH_adjusted_p-values:  Corrected pvalue
 
     control
@@ -232,10 +247,7 @@ and IndexD (treatment), then the user should copy the following STAR output file
     percentage_usage.Index6: the percentage usage of that sub_AS_junction in the AS structure in each of the conditions. If the sub_AS_junction is significantly differentially spliced between two conditions, you can detect a significant 
     difference in the percentage usage between the two conditions (index1,2,3 v.s. Index 4,5,6, for example).
 
-From JUM_1.3.3: an additional column is added at the end: delta Percent spliced In (deltaPSI).
-    Compared to what I described before, the sub_junctions are sorted according to their AS event ID, and one additional column is added, that is deltaPsi. This parameter describes the level of changes of that AS event between two conditions 
-    you are comparing (Percent spliced in as usually referred to in literature).
-      Each AS event (be it cassette exon, A5SS, A3SS, intron retention, mutually exclusive exons, mixed patterns) will contain several AS structures, and each AS structure will include several sub_AS_junctions. Refer to the manuscript for details.
+    delta Percent spliced In (deltaPSI): This column describes the level of changes of that significantly differentially spliced AS event between two conditions you are comparing.
       For a cassette exon event, each AS event contains two AS_structures that include four sub_AS_junctions in total. So each cassette exon AS event will have four lines in the cassette exon output file. One deltaPsi value will be calculated for 
       each cassette exon AS event (aka, every four lines). deltaPsi here is calculated as the difference in the ratio of exon_inclusion_isoform between control and knockdown condition: 
       deltaPSi= exon_inclusion_isoform/(exon_inclusion_isoform+exon_exclusion_isoform) (under control) - exon_inclusion_isoform/(exon_inclusion_isoform+exon_exclsion_isoform) (under knockdown). 
@@ -250,4 +262,7 @@ From JUM_1.3.3: an additional column is added at the end: delta Percent spliced 
       A5SS and A3SS events usually have more than two alternative splicing isoforms (not like cassette exon and intron retention which only has two isoforms so the ratio can be calculated). 
 
       For an MXE and mixed AS event, each AS event contains several AS structures and sub_AS_junctions, depending on the event. the deltaPsi value is calculated like A5SS and A3SS since they also can have more than two alternative splicing isoforms.
+      
+      Note, if an AS event is not associated with any known genes, then the "Gene" column for that event will be marked as "NONE".  Sometimes an AS event can be associated with multiple genes, based on the gene structure.  JUM will pick one of the genes that these AS events map to
+      in the final output file, but will list other genes such AS events are associated with in files with suffix "AS_event_redundant_mapped_gene.txt" and users can refer to them later.
 
