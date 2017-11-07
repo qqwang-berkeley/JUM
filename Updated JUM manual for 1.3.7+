@@ -108,6 +108,13 @@ and IndexD (treatment), then the user should copy the following STAR output file
     cd ..
     after running, go back to the parent directory from the current subdirectories.
     
+    For choice of parameter b and d, users can choose based on the sequencing depth and number of replicates they have for each condition.  If the RNA-seq
+    samples are in general sequenced deep (~40M+ for drosophila and ~60M+ for human samples, for example), the user can choose to have more than, say, 5 reads in all
+    of the replicates of one condition to filter junctions.  Otherwise, the user can choose to have more than, say, 5 reads in the majority of the replicates of the condition. I
+    recommend the parameter d for the latter "majority" case to be #of replicates -1.
+    For example, if the user has 3 replicates for control that are sequenced with medium depth, then parameter d can be 2 (2 out of 3 replicates have more than 5 reads 
+    in a junction that is to be taken for downstream analysis).  If the user has 4 replciates for control that are deeply sequenced, then parameter d can be 4.
+
 13. Copy the files with suffix "junction_counts.txt" and "formatted.txt" from each of the condition subdirectories to the current directory:
     cp control/*junction_counts.txt .
     cp treatment/*junction_counts.txt .
@@ -265,4 +272,3 @@ and IndexD (treatment), then the user should copy the following STAR output file
       
       Note, if an AS event is not associated with any known genes, then the "Gene" column for that event will be marked as "NONE".  Sometimes an AS event can be associated with multiple genes, based on the gene structure.  JUM will pick one of the genes that these AS events map to
       in the final output file, but will list other genes such AS events are associated with in files with suffix "AS_event_redundant_mapped_gene.txt" and users can refer to them later.
-
