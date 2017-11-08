@@ -112,7 +112,7 @@ and IndexD (treatment), then the user should copy the following STAR output file
     samples are in general sequenced deep (~40M+ for drosophila and ~60M+ for human samples, for example), the user can choose to have more than, say, 5 reads in all
     of the replicates of one condition to filter junctions.  Otherwise, the user can choose to have more than, say, 5 reads in the majority of the replicates of the condition. I
     recommend the parameter d for the latter "majority" case to be #of replicates -1.
-    For example, if the user has 3 replicates for control that are sequenced with medium depth, then parameter d can be 2 (2 out of 3 replicates have more than 5 reads 
+    For example, if the user has 3 replicates for control that are sequenced with medium depth, then parameter b can be 5 and parameter d can be 2 (2 out of 3 replicates in control samples have more than 5 reads 
     in a junction that is to be taken for downstream analysis).  If the user has 4 replciates for control that are deeply sequenced, then parameter d can be 4.
 
 13. Copy the files with suffix "junction_counts.txt" and "formatted.txt" from each of the condition subdirectories to the current directory:
