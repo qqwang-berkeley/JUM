@@ -90,7 +90,7 @@ and IndexD (treatment), then the user should copy the following STAR output file
    cp UNION_junc_coor_with_junction_ID.txt treatment/
    
 12. In each of the subdirectories, run JUM-2-2.sh like:
-    bash JUM_2.sh #directory #read_threshold #condition_name #file_number
+    bash JUM_2-2.sh #directory #read_threshold #condition_name #file_number
     (the command needs four input parameters:
          parameter a. #directory: path of the downloaded JUM package.
          parameter b. #read_number_threshold_for_junction: JUM will only consider junctions that have more than this # of unique reads mapped to it 
