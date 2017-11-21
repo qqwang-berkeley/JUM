@@ -69,6 +69,7 @@ and IndexD (treatment), then the user should copy the following STAR output file
 7. Use samtools and bedtools to transform all Aligned.out.sam files (use the exact naming system as below):
    samtools view -bS IndexAAligned.out.sam > IndexAAligned.out.bam
    samtools sort IndexAAligned.out.bam > IndexAAligned.out_sorted.bam
+   samtools index IndexAAligned.out_sorted.bam
    bedtools genomecov -ibam IndexAAligned.out_sorted.bam -bga -split > IndexAAligned.out_coverage.bed
    do this for all your samples.
     
