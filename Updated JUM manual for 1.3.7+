@@ -70,7 +70,6 @@ and IndexD (treatment), then the user should copy the following STAR output file
    samtools view -bS IndexAAligned.out.sam > IndexAAligned.out.bam
    samtools sort IndexAAligned.out.bam > IndexAAligned.out_sorted.bam
    samtools index IndexAAligned.out_sorted.bam
-   bedtools genomecov -ibam IndexAAligned.out_sorted.bam -bga -split > IndexAAligned.out_coverage.bed
    do this for all your samples.
     
 8. Run JUM_2-1.sh
@@ -110,11 +109,16 @@ and IndexD (treatment), then the user should copy the following STAR output file
     after running, go back to the parent directory from the current subdirectories.
     
     For choice of parameter b and d, users can choose based on the sequencing depth and number of replicates they have for each condition.  If the RNA-seq
-    samples are in general sequenced deep (~40M+ for drosophila and ~60M+ for human samples, for example), the user can choose to have more than, say, 5 reads in all
-    of the replicates of one condition to filter junctions.  Otherwise, the user can choose to have more than, say, 5 reads in the majority of the replicates of the condition. I
-    recommend the parameter d for the latter "majority" case to be #of replicates -1.
+    samples are in general sequenced deep (~40M+ for drosophila and ~60M+ for human samples, for example), the user can choose to have junctions that have more than, say, 5 reads in all
+    of the replicates of one condition to filter junctions.  Otherwise, the user can choose to have junctions that receive more than, say, 5 reads in the majority of the replicates of the condition. 
+    The user can also choose parameter b to be 10 or even more if the sequencing depth is much deeper. It also depends on how many replicates the user has. If the user only has, say, two replicates, 
+    then it is better to choose junctions to have more than, say, 5 reads in both replicates. If the user has more than 3, or even more replicates, then it is probably OK to choose junctions that have more 
+    than, say, 5 reads in the majority of the replicates, for example, parameter d can be chosen as # of replicates -1 here in the situation here.
+    
     For example, if the user has 3 replicates for control that are sequenced with medium depth, then parameter b can be 5 and parameter d can be 2 (2 out of 3 replicates in control samples have more than 5 reads 
     in a junction that is to be taken for downstream analysis).  If the user has 4 replciates for control that are deeply sequenced, then parameter d can be 4.
+    
+    Note, parameter d can be different for the control and experimental condition samples, depends on how many replicates each condition has.
 
 13. Copy the files with suffix "junction_counts.txt" and "formatted.txt" from each of the condition subdirectories to the current directory:
     cp control/*junction_counts.txt .
@@ -129,7 +133,9 @@ and IndexD (treatment), then the user should copy the following STAR output file
         parameter b. #read_number_threshold_for_junction: JUM will only consider junctions that have more than this # of unique reads mapped to it 
                      in at least #file_number samples out of all replicates under one of the condition as valid junctions;
 	parameter c. #file_number: JUM will only consider junctions that have more than this # of unique reads mapped to it 
-                     in at least this # of samples out of all replicates under one of the conditions as valid junctions;
+                     in at least this # of samples out of all replicates under one of the conditions as valid junctions; see step 13 for detials. In the situation when 
+		     this parameter is different for control and experimental conditions (as run in step 13 when replicates numbers are different in control and the experimental
+		     conditions, the user can choose whichever the bigger number).
         parameter d. #read_number_threshod_for_exon_intron_boundary: JUM will only consider retained introns that have more than this # of unique 
                      reads mapped to the upstream exon-intron and downstream intron-exon boundaries as valid potential retained introns;
         parameter e. #read_length: the length of the RNA-seq reads)
