@@ -12,7 +12,7 @@ therefore the depth of RNA-seq datasets can affect how many alternative splicing
 successfully tested Drosophila samples of as low as ~20M reads and human samples of as low as ~35M reads.
 2) JUM uses biological replicates to build statistical models. Ideally for each condition the user will have >= 2 replicates. 
 There is a workaround if the user only has one replicate for each biological condition. Plese contact the author if this is the case. 
-3) Perl module Array::Utils is required. To install perl module using CPAN on a server without root access, do the following:
+3) Perl modules Array::Utils and Statistics::Descriptive are required. To install perl module using CPAN on a server without root access, do the following:
    wget -O- http://cpanmin.us | perl - -l ~/perl5 App::cpanminus local::lib
    eval `perl -I ~/perl5/lib/perl5 -Mlocal::lib`
    echo 'eval `perl -I ~/perl5/lib/perl5 -Mlocal::lib`' >> ~/.profile
@@ -32,6 +32,8 @@ There is a workaround if the user only has one replicate for each biological con
    cpanm Module::Name
    In this case, it should be:
    cpanm Array::Utils 
+   and
+   cpanm Statistics::Descriptive
 
 Manual: 
 1. Perform the first round STAR mapping of RNA-seq reads as instructed in the STAR manual.  Below are suggested commands (suppose 100bp paired end reads):
