@@ -53,7 +53,7 @@ and IndexD (treatment), then the user should copy the following STAR output file
    IndexDSJ.out.tab
 
 3. Run JUM_1.sh in the JUM package:
-   bash /home/eagle/JUM_1.3.6/JUM_1.sh
+   bash /home/eagle/JUM_1.3.8/JUM_1.sh
    
    This step will create a file called: combined_SJ_out_tab_unannotated_for_2nd_pass_genome_generation.txt
 
@@ -75,7 +75,7 @@ and IndexD (treatment), then the user should copy the following STAR output file
    do this for all your samples.
     
 8. Run JUM_2-1.sh
-   bash /home/eagle/JUM_1.3.6/JUM_2-1.sh 
+   bash /home/eagle/JUM_1.3.8/JUM_2-1.sh 
 
 9. Create subdirectories for each condition.  For example, control and treatment:
    mkdir control
@@ -103,10 +103,10 @@ and IndexD (treatment), then the user should copy the following STAR output file
     
     Example:
     cd control
-    bash /home/eagle/JUM_1.3.6/JUM_2-2.sh ~/JUM_1.3.6 5 WT 2
+    bash /home/eagle/JUM_1.3.8/JUM_2-2.sh ~/JUM_1.3.8 5 WT 2
     cd ..
     cd treatment
-    bash /home/eagle/JUM_1.3.6/JUM_2-2.sh ~/JUM_1.3.6 5 treatment 2
+    bash /home/eagle/JUM_1.3.8/JUM_2-2.sh ~/JUM_1.3.8 5 treatment 2
     cd ..
     after running, go back to the parent directory from the current subdirectories.
     
@@ -129,7 +129,7 @@ and IndexD (treatment), then the user should copy the following STAR output file
     cp treatment/*formatted.txt .
     
 14. Run JUM_2-3.sh under the current major directory (i.e. /home/eagle/JUMwork) (this step may take up to several hours depending on number of samples to run):
-   bash /home/eagle/JUM_1.3.6/JUM_2-3.sh #directory #read_threshold_1 #file_number #read_threshold_2 #read_length
+   bash /home/eagle/JUM_1.3.8/JUM_2-3.sh #directory #read_threshold_1 #file_number #read_threshold_2 #read_length
    (the command needs five input parameters: 
         parameter a. #directory: path of the downloaded JUM package.
         parameter b. #read_number_threshold_for_junction: JUM will only consider junctions that have more than this # of unique reads mapped to it 
@@ -143,11 +143,11 @@ and IndexD (treatment), then the user should copy the following STAR output file
         parameter e. #read_length: the length of the RNA-seq reads)
     
     Example: 
-    bash /home/eagle/JUM_1.3.6/JUM_2-3.sh /home/eagle/JUM_1.3.6 5 2 2 100
+    bash /home/eagle/JUM_1.3.8/JUM_2-3.sh /home/eagle/JUM_1.3.8 5 2 2 100
     JUM_2-3.sh outputs results into a new folder called JUM_diff/
     
 15. Run the R script in the JUM package, with a user-provided experiment design file (txt format) for differential AS analysis. 
-   Rscript /home/eagle/JUM_1.3.6/R_script_JUM.R experiment_design.txt > outputFile.Rout 2> errorFile.Rout
+   Rscript /home/eagle/JUM_1.3.8/R_script_JUM.R experiment_design.txt > outputFile.Rout 2> errorFile.Rout
       An example experiment_design.txt file is included in the package for the example below: suppose the user has IndexA, IndexB, IndexC and IndexD samples. 
       IndexA and IndexB are drug treated biological replicates and IndexC and IndexD are control biological replicates. JUM_2-3.sh then outputs the following files 
       IndexA_2nd_combined_count.txt, IndexB_2nd_combined_count.txt, IndexC_2nd_combined_count.txt, and IndexD_2nd_combined_count.txt. Note, it is important to keep 
@@ -155,7 +155,7 @@ and IndexD (treatment), then the user should copy the following STAR output file
       R_script_JUM.R will output a file called "AS_differential.txt"
 
 16. Run JUM_3.sh:
-        bash /home/eagle/JUM_1.3.6/JUM_3.sh #directory #pvalue|adjusted_pvalue #threshold #number_of_samples #<number of control_samples|treated_samples>
+        bash /home/eagle/JUM_1.3.8/JUM_3.sh #directory #pvalue|adjusted_pvalue #threshold #number_of_samples #<number of control_samples|treated_samples>
          (the command needs five input parameters: 
          parameter a. #directory: path of the downloaded JUM package
          parameter b. #pvalue|adjusted_pvalue: statistical standard to use as cut-off. Choose between pvalue or padj (multi-test adjusted pvalue).
@@ -164,7 +164,7 @@ and IndexD (treatment), then the user should copy the following STAR output file
          Parameter e. #the number of control samples or the number of treated samples, whichever is smaller)
        
        For example, suppose the user has a total of 4 samples (two controls and two treated), and wish to use pvalue 0.05 as cut off, then run JUM_3.sh as follows:
-        bash /home/eagle/JUM_1.3.6/JUM_3.sh /home/eagle/JUM_1.3.6 pvalue 0.05 4 2
+        bash /home/eagle/JUM_1.3.8/JUM_3.sh /home/eagle/JUM_1.3.8 pvalue 0.05 4 2
 
        JUM_3.sh output a folder: FINAL_JUM_OUTPUT with the following files:
        AS_differential_JUM_output_A3SS_events_pvalue_0.05.txt
@@ -189,7 +189,7 @@ and IndexD (treatment), then the user should copy the following STAR output file
       cd FINAL_JUM_OUTPUT
       
 18. Run JUM_4.sh 
-      bash /home/eagle/JUM_1.3.6/JUM_4.sh #directory #pvalue|adjusted_pvalue #threshold #file_num_condition_1 #file_num_condition_2
+      bash /home/eagle/JUM_1.3.8/JUM_4.sh #directory #pvalue|adjusted_pvalue #threshold #file_num_condition_1 #file_num_condition_2
          (the command needs six input parameters: 
          parameter a. #directory: path of the downloaded JUM package
          parameter b. #pvalue or adjusted_pvalue: statistical standard to use as cut-off. Choose between pvalue or padj (multi-test adjusted pvalue).
@@ -201,7 +201,7 @@ and IndexD (treatment), then the user should copy the following STAR output file
 	 Note, JUM does NOT depend on any priori knowledge of annotation.  This file here is for associating the final differential AS results from JUM to genes for the convenience of users.  If an AS event is 
 	 not mapped to any known gene, then the AS event will be marked as "NONE" in the gene mapping track.
      For example, suppose the user has a total of two replicates for control and three replicates for treated samples, and wish to use pvalue 0.05 as cut off, then run JUM_4 as:
-       bash /home/eagle/JUM_1.3.5/JUM_4_2replicates.sh /home/eagle/JUM_1.3.3 pvalue 0.05 3 2 refFlat.txt
+       bash /home/eagle/JUM_1.3.8/JUM_4_2replicates.sh /home/eagle/JUM_1.3.8 pvalue 0.05 3 2 refFlat.txt
        (if we list drug-treated samples first in the experiment.txt file)
        
        JUM_4.sh will output files with the name: *_sorted_with_dpsi.txt
