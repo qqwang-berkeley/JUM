@@ -103,7 +103,7 @@ and IndexD (treatment), then the user should copy the following STAR output file
     
     Example:
     cd control
-    bash /home/eagle/JUM_1.3.8/JUM_2-2.sh ~/JUM_1.3.8 5 WT 2
+    bash /home/eagle/JUM_1.3.8/JUM_2-2.sh ~/JUM_1.3.8 5 control 2
     cd ..
     cd treatment
     bash /home/eagle/JUM_1.3.8/JUM_2-2.sh ~/JUM_1.3.8 5 treatment 2
@@ -151,7 +151,9 @@ and IndexD (treatment), then the user should copy the following STAR output file
       An example experiment_design.txt file is included in the package for the example below: suppose the user has IndexA, IndexB, IndexC and IndexD samples. 
       IndexA and IndexB are drug treated biological replicates and IndexC and IndexD are control biological replicates. JUM_2-3.sh then outputs the following files 
       IndexA_2nd_combined_count.txt, IndexB_2nd_combined_count.txt, IndexC_2nd_combined_count.txt, and IndexD_2nd_combined_count.txt. Note, it is important to keep 
-      the samples names and condition names in the same alphabetic order in the experiment design file.  
+      the samples names and condition names in the same alphabetic order in the experiment design file.  For example, name the treated sample replicates as "rep1", "rep2" 
+      and untreated samples as "untreated_1" and "untreated_2".  R will read all the files with the suffix "_combined_count.txt" in alphabetical order, so it is important
+      to make sure that the naming system will allow the replicates under the same condition to be read together instead of separately.
       R_script_JUM.R will output a file called "AS_differential.txt"
 
 16. Run JUM_3.sh:
@@ -194,23 +196,25 @@ and IndexD (treatment), then the user should copy the following STAR output file
          parameter a. #directory: path of the downloaded JUM package
          parameter b. #pvalue or adjusted_pvalue: statistical standard to use as cut-off. Choose between pvalue or padj (multi-test adjusted pvalue).
          parameter c. #threshold: cutoff value for pvalue or padj (I.e. 0.05, 0.01, …))
-	 parameter d. #file_num_condition_1: the number of samples/replicates for condition 1 that is listed first in the experiment_design.txt file.  In our example, it is the number of replicates
-	 in drug-treated condition.
-         parameter e. #file_num_condition_2: the number of samples/replicates for condition 2 that is listed second in the experiment_design.txt file.  In our example, it is the number of control replicates.
+	 parameter d. #file_num_condition_1: the number of samples/replicates for condition 1 that is alphabetically listed first in the experiment_design.txt file.  In our example experimental_design.txt file
+	 in the JUM package, it is the number of replicates in drug-treated condition as they are named "IndexA" and IndexB", so alphabetically first. One way to make sure is to check the first line, column 16 and
+	 beyond of the file "AS_differential_JUM_output_cassette_exon_events_pvalue_0.05.txt" from JUM_3.sh and see which condition is listed first, and use the number of replicates from that condition as parameter d here.
+         parameter e. #file_num_condition_2: the number of samples/replicates for condition 2 that is alphabetically listed second in the experiment_design.txt file.  In our example, it is the number of no-drug replicates as
+	 they are named "IndexC" and "IndexD", so alphabetically second.
 	 parameter f. #a refFlat.txt file, recording known gene transcripts.  Such file should be available from UCSC genome browser for each species and users can download it to the current working directory. 
 	 Note, JUM does NOT depend on any priori knowledge of annotation.  This file here is for associating the final differential AS results from JUM to genes for the convenience of users.  If an AS event is 
 	 not mapped to any known gene, then the AS event will be marked as "NONE" in the gene mapping track.
-     For example, suppose the user has a total of two replicates for control and three replicates for treated samples, and wish to use pvalue 0.05 as cut off, then run JUM_4 as:
+     For example, suppose the user has a total of two replicates for no-drug and three replicates for drug-treated samples, and wish to use pvalue 0.05 as cut off, then run JUM_4 as:
        bash /home/eagle/JUM_1.3.8/JUM_4_2replicates.sh /home/eagle/JUM_1.3.8 pvalue 0.05 3 2 refFlat.txt
-       (if we list drug-treated samples first in the experiment.txt file)
+       (as we alphabetically list drug-treated samples first in the experiment_design.txt file by naming them "IndexA", "IndexB")
        
        JUM_4.sh will output files with the name: *_sorted_with_dpsi.txt
        These are the final output files.  
     
 19. Output file format:
 
-    Below I am specifying what each column means, by using an example of comparing the AS between a control condition and a RNAi knockdown condition, with triplicates each (index1,2,3 are knockdown 
-    and index 4 5 6 are controls).
+    Below I am specifying what each column means, by using an example of comparing the AS between a no-drug and a drug-treated condition, with replicates each (indexA,B are drug-treated 
+    and index C,D are no-drug).
     
     You need to count the unique IDs of the second column (AS event ID) for the number of AS events that are differentially spliced between two conditions in the corresponding category (cassette exon, A5SS, 
     A3SS, intron retention, MXE, composite). The total number of AS events in each category that are identified from the biological sample under study are listed in those total event txt files. 
@@ -238,9 +242,9 @@ and IndexD (treatment), then the user should copy the following STAR output file
     
     BH_adjusted_p-values:  Corrected pvalue
 
-    control
-    knockdown
-    fitting_parameter_log2fold_change_knockdown_control: these three columns are all intermediate information calculated during the generalized linear model fitting. General users don't need to pay too much attention to this.
+    drug
+    no-drug
+    fitting_parameter_log2fold_change_drug_no-drug: these three columns are all intermediate information calculated during the generalized linear model fitting. General users don't need to pay too much attention to this.
 
     sub_junction_chr
     sub_junction_start_coor	
@@ -248,33 +252,31 @@ and IndexD (treatment), then the user should copy the following STAR output file
     sub_junction_size	
     sub_junction_strand: these five columns specified the chromosome coordinates, strand, size, etc. information of that sub_AS_junction.
 	
-    raw_count.Index1	
-    raw_count.Index2	
-    raw_count.Index3	
-    raw_count.Index4	
-    raw_count.Index5	
-    raw_count.Index6: the raw read counts of reads that mapped to the sub_AS_junction in each of the conditions.
+    raw_count.IndexA	
+    raw_count.IndexB	
+    raw_count.IndexC	
+    raw_count.IndexD: the raw read counts of reads that mapped to the sub_AS_junction in each of the conditions.
  	
-    percentage_usage.Index1	
-    percentage_usage.Index2	
-    percentage_usage.Index3	
-    percentage_usage.Index4	
-    percentage_usage.Index5	
-    percentage_usage.Index6: the percentage usage of that sub_AS_junction in the AS structure in each of the conditions. If the sub_AS_junction is significantly differentially spliced between two conditions, you can detect a significant 
-    difference in the percentage usage between the two conditions (index1,2,3 v.s. Index 4,5,6, for example).
+    percentage_usage.IndexA	
+    percentage_usage.IndexB	
+    percentage_usage.IndexC	
+    percentage_usage.IndexD: the percentage usage of that sub_AS_junction in the AS structure in each of the conditions. If the sub_AS_junction is significantly differentially spliced between two conditions, you can detect a significant 
+    difference in the percentage usage between the two conditions (indexA,B v.s. Index C,D, for example).
 
     delta Percent spliced In (deltaPSI): This column describes the level of changes of that significantly differentially spliced AS event between two conditions you are comparing.
       For a cassette exon event, each AS event contains two AS_structures that include four sub_AS_junctions in total. So each cassette exon AS event will have four lines in the cassette exon output file. One deltaPsi value will be calculated for 
-      each cassette exon AS event (aka, every four lines). deltaPsi here is calculated as the difference in the ratio of exon_inclusion_isoform between control and knockdown condition: 
-      deltaPSi= exon_inclusion_isoform/(exon_inclusion_isoform+exon_exclusion_isoform) (under control) - exon_inclusion_isoform/(exon_inclusion_isoform+exon_exclsion_isoform) (under knockdown). 
-
+      each cassette exon AS event (aka, every four lines). deltaPsi here is calculated as the difference in the ratio of exon_inclusion_isoform between condition 1 and condition 2: 
+      deltaPSi= exon_inclusion_isoform/(exon_inclusion_isoform+exon_exclusion_isoform) (under condition 1) - exon_inclusion_isoform/(exon_inclusion_isoform+exon_exclsion_isoform) (under condition 2). 
+      condition 1 here corresponds to whichever condition sampels that are alphabetically listed first in the experiment_design.txt sample, or the samples whose raw counts are listed first as indicated in the first line (in our case it is drug-treated sample)
+      of the final output file.
+      
       For an intron retention event, each AS event contains either two AS_structures and four sub_AS_junctions, so, four lines in the intron_retention output file (when the intron size is longer than the RNA-seq read length), or one AS_Structure and two sub_AS_junctions, 
       so, two lines in the output file (when the intron size is smaller than the RNA-seq read length). One deltaPSI value is calculated for each AS event (every four lines or two lines). 
-      Here deltaPsi=intron_inclusion_isoform/(intron_inclusion_isoform+intron_exclusion_isoform) (under control) - intron_inclusion_isoform/(intron_inclusion_isoform+intron_exclusion_isoform) (under knockdown).
+      Here deltaPsi=intron_inclusion_isoform/(intron_inclusion_isoform+intron_exclusion_isoform) (under condition 1) - intron_inclusion_isoform/(intron_inclusion_isoform+intron_exclusion_isoform) (under condition 2).
 
       For an A5SS or A3SS, each AS event contains one AS structure and several sub_AS_junctions, depending on how many alternative spliced 5'/3' splice sites are there. One deltaPsi value is calculated for EACH of the sub_AS_junction (so, every line). Here deltaPsi is calculated 
       as the change in the percentage of junction usage for each sub_AS_junction in control v.s. knockdown: 
-      sub_AS_junction_i/(sub_AS_junction_1+sub_AS_junction_2+ ... + sub_AS_junction_i+...+sub_AS_junction_n) (under control) - sub_AS_junction_i/(sub_AS_junction_1+sub_AS_junction_2+ ... + sub_AS_junction_i+...+sub_AS_junction_n) (under knockdown). It is calculated this way because 
+      sub_AS_junction_i/(sub_AS_junction_1+sub_AS_junction_2+ ... + sub_AS_junction_i+...+sub_AS_junction_n) (under condition 1) - sub_AS_junction_i/(sub_AS_junction_1+sub_AS_junction_2+ ... + sub_AS_junction_i+...+sub_AS_junction_n) (under condition 2). It is calculated this way because 
       A5SS and A3SS events usually have more than two alternative splicing isoforms (not like cassette exon and intron retention which only has two isoforms so the ratio can be calculated). 
 
       For an MXE and mixed AS event, each AS event contains several AS structures and sub_AS_junctions, depending on the event. the deltaPsi value is calculated like A5SS and A3SS since they also can have more than two alternative splicing isoforms.
