@@ -57,7 +57,7 @@ and IndexD (treatment), then the user should copy the following STAR output file
    
    This step will create a file called: combined_SJ_out_tab_unannotated_for_2nd_pass_genome_generation.txt
 
-4. Delete all SJ.out.tab files from this folder (to avoid confusion with second round STAR mapping results).
+4. Delete all SJ.out.tab files as well as all the other 1st round STAR mapping output files (like sam files etc.) from this folder (to avoid confusion with second round STAR mapping results).
 
 5. Perform second round of STAR mapping of RNA-seq reads. Below are suggested commands: 
    a) Making genome index:
