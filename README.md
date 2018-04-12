@@ -7,6 +7,8 @@
 
 - The analysis functions in the current version are complete. I will continue to simplify the user-interface.
   
-Please contact me for any questions and comments.   
+**Please refer to the JUM Wiki page for a complete and updated manual/guide**
 
-**Please refer to the JUM Wiki for a complete manual**
+A description of the JUM method is deposited to bioRxiv here (manuscript has been updated since and will be deposited soon): https://www.biorxiv.org/content/early/2017/03/14/116863
+
+Please contact me for any questions and comments. 
