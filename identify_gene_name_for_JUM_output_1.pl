@@ -47,6 +47,9 @@ while(<IN2>) {
    @name=();
    if($origin !~ /AS_event/) {
       foreach my $id (keys %hash) {
+	        if($junctionID[10] !~ /chr/) {
+			$hash{$id}[2] =~ s/chr//;
+		}
                         if(($junctionID[10] eq $hash{$id}[2]) && ($junctionID[14] eq $hash{$id}[3])) {
                              if ((($junctionID[11] <= $hash{$id}[4]) && ($junctionID[12] >= $hash{$id}[4]) && ($junctionID[12] <= $hash{$id}[5])) || (($junctionID[11] >= $hash{$id}[4]) && ($junctionID[11] <= $hash{$id}[5]) && ($junctionID[12] >= $hash{$id}[5])) || (($junctionID[11] >= $hash{$id}[4]) && ($junctionID[12] <= $hash{$id}[5]))) {
                                   if($hash{$id}[0] ~~ @name) { }

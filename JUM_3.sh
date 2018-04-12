@@ -182,10 +182,10 @@ perl $folder/screening_intron_retention_event_for_no_inner_junction.pl test_intr
 awk 'FNR==NR {arr[$0];next} ($2 in arr)' test_intron_delta_consistant_and_no_inner_junction_list.txt temp_intron_retention > temp_intron_retention_consistant;
 cat title temp_intron_retention_consistant > AS_differential_JUM_output_intron_retention_"$pvalue_padj"_"$cutoff".txt
 
-mkdir FINAL_JUM_OUTPUT;
-mv AS_differential_JUM_output_*"$pvalue_padj"_"$cutoff".txt FINAL_JUM_OUTPUT;
-mv Valid_* FINAL_JUM_OUTPUT;
-mv total_mixed_event.txt FINAL_JUM_OUTPUT;
-mv total_intron_retention_event.txt FINAL_JUM_OUTPUT;
-mv *coordinate.bed FINAL_JUM_OUTPUT;
+mkdir FINAL_JUM_OUTPUT_"$pvalue_padj"_"$cutoff";
+mv AS_differential_JUM_output_*"$pvalue_padj"_"$cutoff".txt FINAL_JUM_OUTPUT_"$pvalue_padj"_"$cutoff";
+mv Valid_* FINAL_JUM_OUTPUT_"$pvalue_padj"_"$cutoff";
+mv total_mixed_event.txt FINAL_JUM_OUTPUT_"$pvalue_padj"_"$cutoff";
+mv total_intron_retention_event.txt FINAL_JUM_OUTPUT_"$pvalue_padj"_"$cutoff";
+mv *coordinate.bed FINAL_JUM_OUTPUT_"$pvalue_padj"_"$cutoff";
 

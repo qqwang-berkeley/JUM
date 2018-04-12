@@ -5,7 +5,7 @@ use warnings;
 
 my $len=scalar(@ARGV);
 if ($len < 1) {
-    die "Usage:making_junction_count_in_each_sample_matching_annotation_for_jum.pl <data_file_1> <data_file_2> <data_file_3>\n";
+    die "Usage:making_junction_count_file_matching_annotation_for_JUM_in_intron_retention.pl <data_file_1> <data_file_2> <data_file_3>\n";
 
 }
 
@@ -20,7 +20,7 @@ open(OUT, ">$data_file_3") || die "can't open OUT file";
 while(<IN2>) {
       chomp;
       my @array=split(/\s+/,$_);
-      $hash{$array[0]}{$array[1]}{$array[2]}{$array[3]}[0]=$array[5];
+      $hash{$array[0]}[0]=$array[1];
 }
 
 close IN2;
@@ -29,8 +29,8 @@ close IN2;
 while(<IN1>) {
       chomp;
       my @temp=split(/\s+/,$_);
-      if(exists $hash{$temp[1]}{$temp[2]}{$temp[3]}{$temp[4]}) {
-           print OUT $temp[0]; print OUT "\t"; print OUT $hash{$temp[1]}{$temp[2]}{$temp[3]}{$temp[4]}[0]; print OUT "\n";
+      if(exists $hash{$temp[0]}) {
+           print OUT $temp[0]; print OUT "\t"; print OUT $hash{$temp[0]}[0]; print OUT "\n";
       }
       else {
            print OUT $temp[0]; print OUT "\t"; print OUT $o; print OUT "\n";
