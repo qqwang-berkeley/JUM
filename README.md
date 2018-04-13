@@ -7,7 +7,7 @@
 
 - The analysis functions in the current version are complete. I will continue to simplify the user-interface.
   
-**Please refer to the JUM Wiki page for a complete and updated manual/guide** https://github.com/qqwang-berkeley/JUM/wiki/The-Hitchhiker's-guide-to-JUM-(version-1.3.12-and-up)
+**Please refer to the JUM Wiki page for a complete and updated manual/guide** https://github.com/qqwang-berkeley/JUM/wiki/A-Hitchhiker's-guide-to-JUM-(version-1.3.12-and-up)
 
 A description of the JUM method is deposited to bioRxiv here (manuscript has been updated since and will be deposited soon): https://www.biorxiv.org/content/early/2017/03/14/116863
 
