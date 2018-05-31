@@ -9,6 +9,6 @@
   
 **Please refer to the JUM Wiki page for a complete and updated manual/guide** https://github.com/qqwang-berkeley/JUM/wiki/A-Hitchhiker's-guide-to-JUM-(version-1.3.12-and-up)
 
-A description of the JUM method is deposited to bioRxiv here (manuscript has been updated since and will be deposited soon): https://www.biorxiv.org/content/early/2017/03/14/116863
+A description of the JUM method is deposited to bioRxiv here (manuscript has been updated in May): https://www.biorxiv.org/content/early/2018/05/09/116863
 
 Please contact me for any questions and comments. 
