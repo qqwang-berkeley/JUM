@@ -11,4 +11,4 @@
 
 A description of the JUM method is deposited to bioRxiv here (manuscript has been updated in May): https://www.biorxiv.org/content/early/2018/05/09/116863
 
-Please contact me for any questions and comments. 
+Feel free to post any questions or comments on the Google group for JUM users: https://groups.google.com/forum/#!forum/jum-users
