@@ -10,7 +10,7 @@
 ## Annouce the launch of JUM V2.0.  Significant speed improvement (>20X) and updated user-friendly output formats.
 * Complete manual for V2.0: <https://github.com/qqwang-berkeley/JUM/wiki/A-Hitchhiker's-guide-to-JUM-(version-2.0-and-up)>
 
-* Complete manual for V1.3.12: <https://github.com/qqwang-berkeley/JUM/wiki/A-Hitchhiker's-guide-to-JUM-(version-1.3.12)>
+* Legacy manual for V1.3.12: <https://github.com/qqwang-berkeley/JUM/wiki/A-Hitchhiker's-guide-to-JUM-(version-1.3.12)>
 
 A description of the JUM method is deposited to bioRxiv here (manuscript has been updated in May): https://www.biorxiv.org/content/early/2018/05/09/116863
 
