@@ -7,8 +7,10 @@
 
 - The analysis functions in the current version are complete. I will continue to simplify the user-interface.
 
-## Annouce the launch of JUM V2.0.  Significant speed improvement (>20X) and updated user-friendly output formats.
-* Complete manual for V2.0: <https://github.com/qqwang-berkeley/JUM/wiki/A-Hitchhiker's-guide-to-JUM-(version-2.0-and-up)>
+## Annouce the launch of JUM V2.0.2  Significant speed improvement (>20X), simplified user interface and updated user-friendly output formats.
+* Complete manual for V2.0.2: <https://github.com/qqwang-berkeley/JUM/wiki/The-Hitchhiker's-guide-to-JUM-(version-2.0.2-)>
+
+* Legacy manual for V2.0 and V2.0.1: <https://github.com/qqwang-berkeley/JUM/wiki/A-Hitchhiker's-guide-to-JUM-(version-2.0-and-up)>
 
 * Legacy manual for V1.3.12: <https://github.com/qqwang-berkeley/JUM/wiki/A-Hitchhiker's-guide-to-JUM-(version-1.3.12)>
 
