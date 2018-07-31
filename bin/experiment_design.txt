@@ -1,5 +1,0 @@
-	condition
-IndexA	drug
-IndexB	drug
-IndexC	no_drug
-IndexD	no_drug
