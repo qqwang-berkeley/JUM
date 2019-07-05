@@ -2,6 +2,7 @@
 - JUM is a tool that offers a completely annotation-free approach to analyze alternative pre-mRNA splicing patterns that are specific to a tissue or sample of interest from RNA-seq datasets.
 * Stable performance packages for V2.0.2: <https://github.com/qqwang-berkeley/JUM/releases/tag/JUM_v2.0.2>
 * Complete manual for V2.0.2: <https://github.com/qqwang-berkeley/JUM/wiki/A-Hitchhiker's-guide-to-JUM-(version-2.0.2-)>
+* For differential AS among multiple experimental conditions check: 
 
 - JUM reports alternative splicing events in six categories: cassette exon, mutually exclusive exons, alternative 5' splice site, alternative 3' splice site, intron retention, Composite patterns
 
