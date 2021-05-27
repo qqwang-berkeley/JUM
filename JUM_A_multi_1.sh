@@ -262,5 +262,5 @@ runtime=$((end-start))
 
 echo "JUM_A_multi_1.sh core execution finished in $runtime seconds."
 echo "Command is:"
-echo "bash JUM_A_multi_1.sh --Folder $folder --JuncThreshold $threshold --fileNum_threshold $file_num --IRthreshold $IR_threshold --Readlength $read_length --Thread $thread_num
+echo "bash JUM_A_multi_1.sh --Folder $folder --JuncThreshold $threshold --fileNum_threshold $file_num --IRthreshold $IR_threshold --Readlength $read_length --Thread $thread_num"
 
