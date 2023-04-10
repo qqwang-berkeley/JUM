@@ -1,9 +1,8 @@
 # The Junction Usage Model (JUM)
 - JUM is a tool that offers a completely annotation-free approach to analyze alternative pre-mRNA splicing patterns that are specific to a tissue or sample of interest from RNA-seq datasets.
-    * Latest stable performance packages for V3.0.0: <https://github.com/qqwang-berkeley/JUM/releases/tag/v3.0.0>
-    * Complete manual for V3.0.0: 
-    * Legacy releast for V2.0.2: <https://github.com/qqwang-berkeley/JUM/releases/tag/JUM_v2.0.2>
-    * Legacy manual for V2.0.2: <https://github.com/qqwang-berkeley/JUM/wiki/A-Hitchhiker's-guide-to-JUM-(version-2.0.2-)>
+    * Stable performance package for V3.0.0: <https://github.com/qqwang-berkeley/JUM/releases/tag/v3.0.0>
+    * Complete manual for V3.0.0 and V2.0.2: <https://github.com/qqwang-berkeley/JUM/wiki/A-Hitchhiker's-guide-to-JUM-(version-2.0.2-)>
+    * Legacy release for V2.0.2: <https://github.com/qqwang-berkeley/JUM/releases/tag/JUM_v2.0.2>
     * For differential AS analysis among multiple experimental conditions see: https://github.com/qqwang-berkeley/JUM/wiki/6.-Running-JUM-for-differential-AS-analysis-among-multiple-experimental-conditions-(multiple-tissues,-patients,-time-series-experiments-etc.)
 
 - JUM reports alternative splicing events in six categories: cassette exon, mutually exclusive exons, alternative 5' splice site, alternative 3' splice site, intron retention, Composite patterns
