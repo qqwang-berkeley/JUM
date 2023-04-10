@@ -134,12 +134,12 @@ process_bed_func() {
    valid=${files%Aligned.out_coverage.bed}"_"valid_long_intron_retention_event_list_total.txt;
    
    sort -k1,1 -k2,2n $files > $sorted_align_bed;
-   intersectBed -wa -wb -a $coor_file_pvalue_sorted -b $sorted_align_bed -sorted > $overlap_pvalue;
+   bedtools intersect -wa -wb -a $coor_file_pvalue_sorted -b $sorted_align_bed -sorted > $overlap_pvalue;
    perl $folder/count_intron_read_long_intron_retention_step2_updated.pl $overlap_pvalue $read_num_pvalue;
    perl $folder/determining_rightful_long_intron_retention_event_updated.pl $read_num_pvalue $screen_pvalue;
    awk -v cut1=0 '$2==cut1, $3==cut1' $screen_pvalue | cut -f1 | sort -u > $valid_pvalue;
 
-   intersectBed -wa -wb -a $coor_file_total_sorted -b $sorted_align_bed -sorted > $overlap;
+   bedtools intersect -wa -wb -a $coor_file_total_sorted -b $sorted_align_bed -sorted > $overlap;
    perl $folder/count_intron_read_long_intron_retention_step2_updated.pl $overlap $read_num;
    perl $folder/determining_rightful_long_intron_retention_event_updated.pl $read_num $screen;
    awk -v cut1=0 '$2==cut1, $3==cut1' $screen | cut -f1 | sort -u > $valid;
@@ -221,7 +221,7 @@ process_cassette_func() {
    indicator=${files%Aligned.out_coverage.bed}"_"temp_total_cassette_with_indicator.txt;
    valid_SE=${files%Aligned.out_coverage.bed}"_"valid_total_cassette_exon_event_ID.txt;
  
-   intersectBed -wa -wb -a cassette_exon_coordinate_sorted.bed -b $sorted_align_bed -sorted > $intersect;
+   bedtools intersect -wa -wb -a cassette_exon_coordinate_sorted.bed -b $sorted_align_bed -sorted > $intersect;
    perl $folder/count_intron_read_long_intron_retention_step2_updated.pl $intersect $read_per_ID;
    perl $folder/determining_rightful_long_intron_retention_event_updated.pl $read_per_ID $indicator;
    awk -v cut1=0 '$2==cut1, $3==cut1' $indicator | cut -f1 | sort -u > $valid_SE;
@@ -252,7 +252,7 @@ process_MXE_func() {
    indicator_MXE=${files%Aligned.out_coverage.bed}"_"temp_total_MXE_with_indicator.txt;
    valid_SE_MXE=${files%Aligned.out_coverage.bed}"_"valid_total_MXE_event_ID.txt;
  
-   intersectBed -wa -wb -a MXE_coordinate_sorted.bed -b $sorted_align_bed -sorted > $intersect_MXE ;
+   bedtools intersect -wa -wb -a MXE_coordinate_sorted.bed -b $sorted_align_bed -sorted > $intersect_MXE ;
    perl $folder/count_intron_read_long_intron_retention_step2_updated.pl $intersect_MXE $read_per_ID_MXE;
    perl $folder/determining_rightful_long_intron_retention_event_updated.pl $read_per_ID_MXE $indicator_MXE;
    awk -v cut1=0 '$2==cut1, $3==cut1' $indicator_MXE | cut -f1 | sort -u > $valid_SE_MXE;

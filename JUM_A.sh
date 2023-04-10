@@ -245,14 +245,14 @@ process_sortedbam () {
     intersect_bam_short_intron2=${sortfile%_sorted.bam}"_"intersect_short_intron2.txt;
     bedtools bamtobed -i $sortfile > $bamfiletobed;
     sort -k1,1 -k2,2n $bamfiletobed > $bamsortedbed;
-    intersectBed -a $bamsortedbed -b output_long_intron_sorted.gff -sorted -wa -u -f 1 > $intersect_bam_long_intron 
-    intersectBed -a $bamsortedbed -b output_short_intron1_sorted.gff -sorted -wa -u -f 1 > $intersect_bam_short_intron1 
-    intersectBed -a $bamsortedbed -b output_short_intron2_sorted.gff -sorted -wa -u -F 1 > $intersect_bam_short_intron2 
+    bedtools intersect -a $bamsortedbed -b output_long_intron_sorted.gff -sorted -wa -u -f 1 > $intersect_bam_long_intron 
+    bedtools intersect -a $bamsortedbed -b output_short_intron1_sorted.gff -sorted -wa -u -f 1 > $intersect_bam_short_intron1 
+    bedtools intersect -a $bamsortedbed -b output_short_intron2_sorted.gff -sorted -wa -u -F 1 > $intersect_bam_short_intron2 
 }    
 
 for sortfile in *Aligned.out_sorted.bam;
 do
-    process_sortedbam $sortfile &
+    process_sortedbam $sortfile
 done    
 
 wait
@@ -260,7 +260,7 @@ wait
 coverage_bamfile () {
     bamfile=$1;
     coveragefile=${bamfile%_sorted.bam}"_"coverage.bed;
-    genomeCoverageBed -ibam $bamfile -bga -split > $coveragefile;
+    bedtools genomecov -ibam $bamfile -bga -split > $coveragefile;
 }
 
 for bamfile in *Aligned.out_sorted.bam;
@@ -275,7 +275,7 @@ process_inter_long_intron() {
     intersect_long_intron_coor=${intersect_long_intron%.txt}"_"chr_coor.txt
     output_long_intron=${intersect_long_intron%.txt}"_"count_table
     awk '{print $1 "\t" $2+1 "\t" $2+2 "\t" $4 "\t" $5 "\t" $6}' $intersect_long_intron | sort -k1,1 -k2,2n > $intersect_long_intron_coor;
-    intersectBed -a output_long_intron_adjusted_range_sorted.bed -b $intersect_long_intron_coor -wa -c -sorted | sort -V -k4,4 | awk '{print $4 "\t" $7}' > $output_long_intron
+    bedtools intersect -a output_long_intron_adjusted_range_sorted.bed -b $intersect_long_intron_coor -wa -c -sorted | sort -V -k4,4 | awk '{print $4 "\t" $7}' > $output_long_intron
 }
 
 for intersect_long_intron in *intersect_long_intron.txt;
@@ -295,10 +295,10 @@ process_inter_short_intron() {
     output_short_intron2=${intersect_short_intron2%.txt}"_"count_table;
     output_short_intron=${intersect_short_intron1%_intron1.txt}"_"intron_count_table;
     awk '{print $1 "\t" $2+1 "\t" $2+2 "\t" $4 "\t" $5 "\t" $6}' $intersect_short_intron1 | sort -k1,1 -k2,2n > $intersect_short_intron1_coor;
-    intersectBed -a output_short_intron_1_adjusted_range_sorted.bed -b $intersect_short_intron1_coor -wa -c -sorted | sort -V -k4,4 | awk '{print $4 "\t" $7}' > $output_short_intron1;
+    bedtools intersect -a output_short_intron_1_adjusted_range_sorted.bed -b $intersect_short_intron1_coor -wa -c -sorted | sort -V -k4,4 | awk '{print $4 "\t" $7}' > $output_short_intron1;
     awk -v readlen="$read_length" '$3-$2 <= readlen' $intersect_short_intron2 > $intersect_short_intron2_edit;
     awk '{print $1 "\t" $2+1 "\t" $2+2 "\t" $4 "\t" $5 "\t" $6}' $intersect_short_intron2_edit | sort -k1,1 -k2,2n > $intersect_short_intron2_coor;
-    intersectBed -a output_short_intron_2_adjusted_range_sorted.bed -b $intersect_short_intron2_coor -wa -c -sorted | sort -V -k4,4 | awk '{print $4 "\t" $7}' > $output_short_intron2;   
+    bedtools intersect -a output_short_intron_2_adjusted_range_sorted.bed -b $intersect_short_intron2_coor -wa -c -sorted | sort -V -k4,4 | awk '{print $4 "\t" $7}' > $output_short_intron2;   
     cat $output_short_intron1 $output_short_intron2 > $output_short_intron;
 }
 

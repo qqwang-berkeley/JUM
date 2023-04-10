@@ -5,11 +5,6 @@ if (length(args)==0) {
   stop("An experiment design file must be supplied (input file).n", call.=FALSE)
 }
 
-source("http://bioconductor.org/biocLite.R")
-#dir.create(path = Sys.getenv("R_LIBS_USER"), showWarnings = FALSE, recursive = TRUE)
-if (!require(DEXSeq)) biocLite("DEXSeq", dependencies=TRUE)
-#if (!require(DEXSeq)) biocLite("DEXSeq", suppressUpdates = TRUE, lib = Sys.getenv("R_LIBS_USER"), dependencies=TRUE)
-
 library(DEXSeq)
 
 annotationfile = file.path("combined_AS_JUM.gff")
@@ -30,6 +25,8 @@ JUM = estimateDispersions(JUM)
 JUM = testForDEU(JUM)
 JUM = estimateExonFoldChanges(JUM, fitExpToVar="condition")
 dxr1 = DEXSeqResults(JUM)
-write.table(dxr1, "AS_differential.txt", sep="\t", quote=F)
+dxr1_sub <- dxr1[,1:12]
+transcripts <- as.character(dxr1$transcripts)
+write.table(cbind(dxr1_sub, transcripts), "AS_differential.txt", sep="\t", quote=F)
 q()
 
